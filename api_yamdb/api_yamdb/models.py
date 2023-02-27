@@ -1,4 +1,7 @@
 
+import datatime
+svgsfg
+
 print("Hello!")
 
 from .asgi models.IntegerField(_("
@@ -10,4 +13,3 @@ s defaf
 models.GenericIPAddressField(_(" s
 daf 
 sd"), protocol="both", unpack_ipv4=False)
-
