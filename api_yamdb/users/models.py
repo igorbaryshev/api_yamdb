@@ -9,10 +9,14 @@ class User(AbstractUser):
         MODERATOR = 'moderator'
         ADMIN = 'admin'
 
-    bio = models.TextField(blank=True)
+    bio = models.TextField(
+        'Биография',
+        blank=True,
+    )
 
     role = models.CharField(
+        'Роль',
         max_length=32,
         choices=Role.choices,
-        default=Role.USER
+        default=Role.USER,
     )
