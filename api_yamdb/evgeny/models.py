@@ -58,6 +58,7 @@ class Title(models.Model):
         null=True,
         related_name='title'
     )
+    description = models.TextField (verbose_name='описание')
 
     def __str__(self) -> str:
         return self.name
