@@ -4,14 +4,16 @@ from .models import Title, Category, Genre
 
 
 @admin.register(Title)
-class BookAdmin(admin.ModelAdmin):
+class TitleAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'year')
 
+
 @admin.register(Category)
-class BookAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
 
+
 @admin.register(Genre)
-class BookAdmin(admin.ModelAdmin):
+class GenreAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
 
