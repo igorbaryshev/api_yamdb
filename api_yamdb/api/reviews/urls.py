@@ -1,9 +1,9 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 
 from reviews.views import CommentViewSet, ReviewViewSet
 
-v1_router = DefaultRouter()
+v1_router = SimpleRouter()
 v1_router.register(r'titles/(?P<titles_id>\d+)/reviews', ReviewViewSet)
 v1_router.register(
     r'titles/(?P<titles_id>\d+)/reviews/(?P<review_id>\d+)/comments',
