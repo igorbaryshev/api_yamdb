@@ -43,3 +43,13 @@ class IsAdminUser(BasePermission):
                     and (request.user.role == 'admin'
                          or request.user.is_staff)
                     )
+
+
+class IsUserAccountOwner(BasePermission):
+    """
+    Allows access to modify account owner to modify his account.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return bool(request.user and request.user.is_authenticated
+                    and request.user == obj)
