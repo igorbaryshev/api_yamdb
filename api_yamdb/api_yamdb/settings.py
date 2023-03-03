@@ -21,11 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
     'rest_framework',
-    'titles'
-
-
+    'users.apps.UsersConfig',
+    'reviews.apps.ReviewsConfig',
+    'titles.apps.ApiConfig',
+    'media_catalog.apps.MediaCatalogConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -107,3 +108,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
+AUTH_USER_MODEL = 'users.User'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
