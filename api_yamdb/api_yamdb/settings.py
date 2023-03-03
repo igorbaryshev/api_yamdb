@@ -24,8 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users.apps.UsersConfig',
     'reviews.apps.ReviewsConfig',
-    'titles.apps.ApiConfig',
-    'media_catalog.apps.MediaCatalogConfig',
+    'titles.apps.TitlesConfig',
     'api.apps.ApiConfig',
 ]
 

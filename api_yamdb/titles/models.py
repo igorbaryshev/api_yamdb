@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-
 User = get_user_model()
 
 
@@ -12,14 +11,15 @@ class Category(models.Model):
         verbose_name='Категория'
     )
     slug = models.SlugField()
-    
+
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     class Meta:
         ordering = ['name']
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -30,7 +30,7 @@ class Genre(models.Model):
     slug = models.SlugField()
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     class Meta:
         ordering = ['name']
@@ -44,6 +44,7 @@ class Title(models.Model):
         verbose_name='Название произведения',
     )
     year = models.IntegerField()
+
     category = models.ForeignKey(
         Category,
         null=True,
@@ -51,18 +52,17 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         related_name='title'
     )
-    
+
     genre = models.ManyToManyField(
         Genre,
         blank=True,
-        null=True,
         related_name='title'
     )
-    description = models.TextField (verbose_name='описание')
+    description = models.TextField(verbose_name='описание')
 
     def __str__(self) -> str:
-        return self.name
-    
+        return str(self.name)
+
     class Meta:
         ordering = ['name']
         verbose_name = 'Произведение'
