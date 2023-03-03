@@ -12,3 +12,7 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+
+'''
+test commit
+'''
