@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users.apps.UsersConfig',
     'reviews.apps.ReviewsConfig',
-    'media_catalog.apps.MediaCatalogConfig',
+    'titles.apps.TitlesConfig',
     'api.apps.ApiConfig',
 ]
 
