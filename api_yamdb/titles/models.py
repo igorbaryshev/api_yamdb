@@ -12,7 +12,6 @@ class Category(models.Model):
     )
     slug = models.SlugField(
         unique=True,
-        
     )
 
     def __str__(self) -> str:
