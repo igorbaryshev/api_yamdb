@@ -11,9 +11,8 @@ class Category(models.Model):
         verbose_name='Категория',
     )
     slug = models.SlugField(
-        max_length=50,
         unique=True,
-        allow_unicode=True,
+        
     )
 
     def __str__(self) -> str:
