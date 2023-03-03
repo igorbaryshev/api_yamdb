@@ -1,4 +1,5 @@
 from django.db import models
+<<<<<<< HEAD
 from users.models import User
 # from ... import Title
 
@@ -21,3 +22,5 @@ class Comment(models.Model):
         Review, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True)
+=======
+>>>>>>> develop
