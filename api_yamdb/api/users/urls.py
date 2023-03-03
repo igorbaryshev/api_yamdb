@@ -1,4 +1,9 @@
-from django.urls import include
+from django.urls import include, path
 
+from users.views import UserRegistrationViewSet
 
-urlpatterns = []
+urlpatterns = [
+    path('v1/auth/signup/',
+         UserRegistrationViewSet.as_view({'post': 'create'}),
+         name='signup'),
+]
