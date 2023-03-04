@@ -13,10 +13,16 @@ class User(AbstractUser):
         'Биография',
         blank=True,
     )
-
     role = models.CharField(
         'Роль',
         max_length=32,
         choices=Role.choices,
         default=Role.USER,
+    )
+    email = models.EmailField(
+        'email address',
+        unique=True,
+        error_messages={
+            'unique': 'A user with that email already exists.',
+        },
     )
