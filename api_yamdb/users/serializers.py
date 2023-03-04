@@ -42,12 +42,12 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
         data = super().validate(attrs)
 
         confirmation_code = attrs.get('confirmation_code')
-        token = str(self.get_token(self.user))
-        data["token"] = token
-
         if not default_token_generator.check_token(self.user,
                                                    confirmation_code):
             raise serializers.ValidationError('wrong confirmation code.')
+
+        token = str(self.get_token(self.user))
+        data["token"] = token
 
         return data
 
