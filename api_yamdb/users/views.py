@@ -15,7 +15,9 @@ User = get_user_model()
 
 class UserRegistrationViewSet(CreateViewSet):
     """
-    A viewset that registers a new user.
+    A viewset that registers a new user, if it doesn't exist,
+    and sends confirmation code to their email,
+    if correct credentials are provided.
     """
     serializer_class = UserRegistrationSerializer
     queryset = User.objects.all()

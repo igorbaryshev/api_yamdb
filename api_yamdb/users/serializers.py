@@ -29,10 +29,10 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
     token_class = AccessToken
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(TokenObtainSerializer, self).__init__(*args, **kwargs)
+
         self.fields[self.username_field] = serializers.CharField()
         self.fields['confirmation_code'] = serializers.CharField()
-        del self.fields['password']
 
     def validate_username(self, username):
         return get_object_or_404(User, username=username).username
