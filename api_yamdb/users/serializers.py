@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from rest_framework_simplejwt.tokens import AccessToken
-
-from users.tokens import confirmation_code
 
 User = get_user_model()
 
@@ -42,11 +41,12 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
         attrs.update({'password': ''})
         data = super().validate(attrs)
 
-        code = attrs.get('confirmation_code')
+        confirmation_code = attrs.get('confirmation_code')
         token = str(self.get_token(self.user))
         data["token"] = token
 
-        if not confirmation_code.check_token(self.user, code):
+        if not default_token_generator.check_token(self.user,
+                                                   confirmation_code):
             raise serializers.ValidationError('wrong confirmation code.')
 
         return data
