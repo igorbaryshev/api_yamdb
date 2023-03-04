@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers, exceptions
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -10,11 +10,12 @@ User = get_user_model()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=254)
-    username = serializers.RegexField(regex=r'^[\w.@+-]+\Z', max_length=150)
     """
     User registration serializer.
     """
+    email = serializers.EmailField(max_length=254)
+    username = serializers.RegexField(regex=r'^[\w.@+-]+\Z', max_length=150)
+
     def validate_username(self, username):
         if username == 'me':
             raise serializers.ValidationError('this username is not allowed.')
@@ -35,10 +36,7 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
         del self.fields['password']
 
     def validate_username(self, username):
-        if not User.objects.filter(username=username).exists():
-            raise exceptions.NotFound
-
-        return username
+        return get_object_or_404(User, username=username).username
 
     def validate(self, attrs):
         attrs.update({'password': ''})
@@ -52,6 +50,7 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
             raise serializers.ValidationError('wrong confirmation code.')
 
         return data
+
 
 class AdminUserSerializer(serializers.ModelSerializer):
 
