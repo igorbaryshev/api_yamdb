@@ -28,7 +28,9 @@ class Genre(models.Model):
         unique=True,
         verbose_name='Жанр'
     )
-    slug = models.SlugField()
+    slug = models.SlugField(
+        unique=True,
+    )
 
     def __str__(self) -> str:
         return str(self.name)
