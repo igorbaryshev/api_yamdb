@@ -3,6 +3,7 @@ from rest_framework import viewsets
 # from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 # from rest_framework import permissions
+from rest_framework.exceptions import ValidationError
 
 from users.permissions import IsAuthorOrReadOnly
 from reviews.models import Review
@@ -22,6 +23,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('titles_id'))
+        review = Review.objects.filter(author=self.request.user, title=title)
+        if review.exists():
+            raise ValidationError(
+                {'Вы уже делали отзыв к этому произведению.'}
+            )
         serializer.save(author=self.request.user, title=title)
 
 
