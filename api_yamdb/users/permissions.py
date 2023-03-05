@@ -38,6 +38,8 @@ class IsAdminOrReadOnly(BasePermission):
            and (request.user.role == 'admin' or request.user.is_superuser)):
             return True
 
+        return False
+
 
 class IsAdminUser(BasePermission):
     """
@@ -51,7 +53,7 @@ class IsAdminUser(BasePermission):
 
 class IsUserAccountOwner(BasePermission):
     """
-    Allows access to modify account owner to modify his account.
+    Allows account owners to modify their account.
     """
     def has_object_permission(self, request, view, obj):
         return bool(request.user and request.user.is_authenticated

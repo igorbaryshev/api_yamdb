@@ -1,32 +1,36 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
+from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from users.permissions import IsAdminUser
-from users.serializers import UserRegistrationSerializer, AdminUserSerializer
-from users.viewsets import CreateViewSet
+from users.permissions import IsAdminUser, IsUserAccountOwner
+from users.serializers import (UserRegistrationSerializer,
+                               UserSerializer, UserProfileSerializer)
+from users.viewsets import RetrieveUpdateViewSet
 
 User = get_user_model()
 
 
-class UserRegistrationViewSet(CreateViewSet):
+class UserRegistrationAPIView(CreateAPIView):
     """
-    A viewset that registers a new user, if it doesn't exist,
+    API view that registers a new user, if it doesn't exist,
     and sends confirmation code to their email,
     if correct credentials are provided.
     """
     serializer_class = UserRegistrationSerializer
-    queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        self.send_confirmation_code()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
                         status=status.HTTP_200_OK,
@@ -47,19 +51,32 @@ class UserRegistrationViewSet(CreateViewSet):
                 raise ValidationError(
                     {'username': 'This username is already taken.'}
                 )
-            user = serializer.save()
+            self.user = serializer.save()
         else:
-            user = user[0]
+            self.user = user[0]
 
-        self.send_confirmation_code(user)
-
-    def send_confirmation_code(self, user):
+    def send_confirmation_code(self):
         subject = 'Confirmation code.'
-        message = default_token_generator.make_token(user)
-        user.email_user(subject, message)
+        message = default_token_generator.make_token(self.user)
+        self.user.email_user(subject, message)
 
 
-class AdminUserViewSet(ModelViewSet):
+class UserViewSet(ModelViewSet):
+    lookup_field = 'username'
     queryset = User.objects.all()
-    serializer_class = AdminUserSerializer
+    serializer_class = UserSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['username']
+
+
+class UserProfileViewSet(RetrieveUpdateViewSet):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsUserAccountOwner]
+
+    def get_object(self):
+        obj = self.request.user
+
+        self.check_object_permissions(self.request, obj)
+
+        return obj
