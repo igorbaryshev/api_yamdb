@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -7,7 +8,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from users.permissions import IsAdminUser
 from users.serializers import UserRegistrationSerializer, AdminUserSerializer
-from users.tokens import confirmation_code
 from users.viewsets import CreateViewSet
 
 User = get_user_model()
@@ -15,7 +15,9 @@ User = get_user_model()
 
 class UserRegistrationViewSet(CreateViewSet):
     """
-    A viewset that registers a new user.
+    A viewset that registers a new user, if it doesn't exist,
+    and sends confirmation code to their email,
+    if correct credentials are provided.
     """
     serializer_class = UserRegistrationSerializer
     queryset = User.objects.all()
@@ -53,7 +55,7 @@ class UserRegistrationViewSet(CreateViewSet):
 
     def send_confirmation_code(self, user):
         subject = 'Confirmation code.'
-        message = confirmation_code.make_token(user)
+        message = default_token_generator.make_token(user)
         user.email_user(subject, message)
 
 
