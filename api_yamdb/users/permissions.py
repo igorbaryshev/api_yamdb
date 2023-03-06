@@ -18,7 +18,7 @@ class IsAuthorOrReadOnly(BasePermission):
             return True
 
         if (request.user and request.user.is_authenticated
-           and (request.user.role in ['moderator', 'admin']
+           and (request.user.role in ('moderator', 'admin')
                 or request.user.is_superuser)):
             return True
 
@@ -26,7 +26,6 @@ class IsAuthorOrReadOnly(BasePermission):
 
 
 class IsAdminOrReadOnly(BasePermission):
-
     """
     Only admin can modify.
     """

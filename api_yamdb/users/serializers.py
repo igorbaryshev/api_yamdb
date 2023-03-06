@@ -18,13 +18,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                                      validators=[UnicodeUsernameValidator()])
 
     def validate_username(self, username):
-        if username == 'me':
+        if username.lower() == 'me':
             raise serializers.ValidationError('this username is not allowed.')
         return username
 
     class Meta:
         model = User
-        fields = ['email', 'username']
+        fields = ('email', 'username')
 
 
 class AccessTokenObtainSerializer(TokenObtainSerializer):
@@ -64,8 +64,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name',
-                  'last_name', 'bio', 'role']
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -75,6 +75,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name',
-                  'last_name', 'bio', 'role']
-        read_only_fields = ['role']
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
+        read_only_fields = ('role',)

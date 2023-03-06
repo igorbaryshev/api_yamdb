@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
 from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import status
@@ -24,7 +23,7 @@ class UserRegistrationAPIView(CreateAPIView):
     if correct credentials are provided.
     """
     serializer_class = UserRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -62,17 +61,20 @@ class UserRegistrationAPIView(CreateAPIView):
 
 
 class UserViewSet(ModelViewSet):
+    """
+    A viewset that allows admin to add or modify users.
+    """
     lookup_field = 'username'
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['username']
+    permission_classes = (IsAdminUser,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
 
 
 class UserProfileViewSet(RetrieveUpdateViewSet):
     serializer_class = UserProfileSerializer
-    permission_classes = [IsUserAccountOwner]
+    permission_classes = (IsUserAccountOwner,)
 
     def get_object(self):
         obj = self.request.user
