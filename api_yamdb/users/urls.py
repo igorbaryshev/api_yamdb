@@ -6,20 +6,20 @@ from users.views import (UserSignUpAPIView,
 
 app_name = 'users'
 
-users_view = UserViewSet.as_view({'get': 'list', 'post': 'create'})
-user_view = UserViewSet.as_view(
+users_list_view = UserViewSet.as_view({'get': 'list', 'post': 'create'})
+users_detail_view = UserViewSet.as_view(
     {'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}
 )
-user_profile_view = UserProfileViewSet.as_view(
+users_profile_view = UserProfileViewSet.as_view(
     {'get': 'retrieve', 'patch': 'partial_update'}
 )
 
 urlpatterns = [
-    path('users/', users_view, name='users_api'),
-    path('users/me/', user_profile_view, name='user_profile_api'),
+    path('users/', users_list_view, name='users_api'),
+    path('users/me/', users_profile_view, name='user_profile_api'),
     re_path(
         r'^users/(?P<username>[\w.@+-]{1,150})/$',
-        user_view,
+        users_detail_view,
         name='user_api'
     ),
     path('auth/signup/', UserSignUpAPIView.as_view(), name='signup_api'),
