@@ -9,20 +9,20 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from users.permissions import IsAdminUser, IsUserAccountOwner
-from users.serializers import (UserRegistrationSerializer,
+from users.serializers import (UserSignUpSerializer,
                                UserSerializer, UserProfileSerializer)
 from users.viewsets import RetrieveUpdateViewSet
 
 User = get_user_model()
 
 
-class UserRegistrationAPIView(CreateAPIView):
+class UserSignUpAPIView(CreateAPIView):
     """
-    API view that registers a new user, if it doesn't exist,
+    API view that signs up a new user, if it doesn't exist,
     and sends confirmation code to their email,
     if correct credentials are provided.
     """
-    serializer_class = UserRegistrationSerializer
+    serializer_class = UserSignUpSerializer
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):

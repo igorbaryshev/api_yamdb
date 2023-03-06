@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 User = get_user_model()
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class UserSignUpSerializer(serializers.ModelSerializer):
     """
     User registration serializer.
     """
