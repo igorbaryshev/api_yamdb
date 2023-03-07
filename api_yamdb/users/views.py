@@ -85,5 +85,4 @@ class UserViewSet(ModelViewSet):
         self.kwargs['username'] = request.user.username
         if request.method == 'PATCH':
             return self.partial_update(request)
-        else:
-            return self.retrieve(request)
+        return self.retrieve(request)
