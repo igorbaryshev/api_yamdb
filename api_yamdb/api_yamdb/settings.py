@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'users.apps.UsersConfig',
     'reviews.apps.ReviewsConfig',
     'titles.apps.TitlesConfig',
@@ -90,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -129,7 +130,6 @@ SIMPLE_JWT = {
     'TOKEN_OBTAIN_SERIALIZER': 'users.serializers.AccessTokenObtainSerializer'
 }
 
-# Change to filebased for review
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
