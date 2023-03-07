@@ -25,7 +25,6 @@ class TitlesSerializer(serializers.ModelSerializer):
         model = Title
         fields = ['id', 'name', 'year', 'description', 'genre', 'category']
 
-        
 
 class CreateTitleSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
@@ -50,7 +49,7 @@ class CreateTitleSerializer(serializers.ModelSerializer):
             genre = Genre.objects.get(slug=genre_data.slug)
             title.genre.add(genre)
         return title
-    
+
     def to_representation(self, instance):
         serializer = TitlesSerializer(instance)
         return serializer.data
