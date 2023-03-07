@@ -18,7 +18,7 @@ class IsAuthorOrReadOnly(BasePermission):
             return True
 
         if (request.user and request.user.is_authenticated
-           and (request.user.role in ['moderator', 'admin']
+           and (request.user.role in ('moderator', 'admin')
                 or request.user.is_superuser)):
             return True
 
@@ -26,7 +26,6 @@ class IsAuthorOrReadOnly(BasePermission):
 
 
 class IsAdminOrReadOnly(BasePermission):
-
     """
     Only admin can modify.
     """
@@ -38,6 +37,8 @@ class IsAdminOrReadOnly(BasePermission):
            and (request.user.role == 'admin' or request.user.is_superuser)):
             return True
 
+        return False
+
 
 class IsAdminUser(BasePermission):
     """
@@ -47,12 +48,3 @@ class IsAdminUser(BasePermission):
         return bool(request.user and request.user.is_authenticated
                     and (request.user.role == 'admin'
                          or request.user.is_superuser))
-
-
-class IsUserAccountOwner(BasePermission):
-    """
-    Allows access to modify account owner to modify his account.
-    """
-    def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.is_authenticated
-                    and request.user == obj)

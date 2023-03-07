@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-User = get_user_model()
-
 
 class Category(models.Model):
     name = models.CharField(
@@ -24,7 +22,7 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(
-        max_length=30,
+        max_length=256,
         unique=True,
         verbose_name='Жанр'
     )
@@ -40,7 +38,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(
-        max_length=50,
+        max_length=256,
         verbose_name='Название произведения',
     )
     year = models.IntegerField()
@@ -58,7 +56,7 @@ class Title(models.Model):
         blank=True,
         related_name='title'
     )
-    description = models.TextField(verbose_name='описание')
+    description = models.TextField(verbose_name='описание', blank=True)
 
     def __str__(self) -> str:
         return str(self.name)
