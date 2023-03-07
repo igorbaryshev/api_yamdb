@@ -6,13 +6,13 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from users.permissions import IsAdminUser, IsAuthenticated
+from users.permissions import IsAdminUser
 from users.serializers import (UserSignUpSerializer,
                                UserSerializer, UserProfileSerializer)
-from users.viewsets import RetrieveUpdateViewSet
 
 User = get_user_model()
 

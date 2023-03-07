@@ -1,8 +1,8 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users.views import UserSignUpAPIView,UserViewSet
+from users.views import UserSignUpAPIView, UserViewSet
 
 app_name = 'users'
 
