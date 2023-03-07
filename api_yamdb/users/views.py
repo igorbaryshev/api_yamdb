@@ -64,7 +64,7 @@ class UserViewSet(ModelViewSet):
     """
     A viewset that allows admin to add or modify users.
     """
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
     filter_backends = (filters.SearchFilter,)
