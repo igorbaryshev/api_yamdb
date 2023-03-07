@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
@@ -8,24 +9,30 @@ from rest_framework_simplejwt.tokens import AccessToken
 User = get_user_model()
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class UserSignUpSerializer(serializers.ModelSerializer):
     """
     User registration serializer.
     """
     email = serializers.EmailField(max_length=254)
-    username = serializers.RegexField(regex=r'^[\w.@+-]+\Z', max_length=150)
+    username = serializers.CharField(max_length=150,
+                                     validators=[UnicodeUsernameValidator()])
 
     def validate_username(self, username):
-        if username == 'me':
+
+        if username.lower() == 'me':
             raise serializers.ValidationError('this username is not allowed.')
+
         return username
 
     class Meta:
         model = User
-        fields = ['email', 'username']
+        fields = ('email', 'username')
 
 
 class AccessTokenObtainSerializer(TokenObtainSerializer):
+    """
+    Single token serializer.
+    """
     token_class = AccessToken
 
     def __init__(self, *args, **kwargs):
@@ -52,9 +59,24 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
         return data
 
 
-class AdminUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    """
+    User serializer.
+    """
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name',
-                  'last_name', 'bio', 'role']
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    User profile serializer.
+    """
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
+        read_only_fields = ('role',)
