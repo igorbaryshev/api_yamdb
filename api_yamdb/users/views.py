@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework import filters
 from rest_framework import permissions
-from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView
@@ -30,19 +29,18 @@ class UserSignUpAPIView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+
         self.send_confirmation_code()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data,
-                        status=status.HTTP_200_OK,
-                        headers=headers)
+
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         email = serializer.validated_data.get('email')
         username = serializer.validated_data.get('username')
 
         user = User.objects.filter(email=email, username=username)
-
         if not user.exists():
+
             if User.objects.filter(email=email).exists():
                 raise ValidationError(
                     {'email': 'User account with this email already exists.'}
@@ -85,6 +83,7 @@ class UserViewSet(ModelViewSet):
     )
     def user_profile(self, request):
         user = request.user
+
         if request.method == 'PATCH':
             serializer = self.get_serializer(user,
                                              data=request.data, partial=True)
@@ -92,4 +91,5 @@ class UserViewSet(ModelViewSet):
             self.perform_update(serializer)
         else:
             serializer = self.get_serializer(user)
+
         return Response(serializer.data)

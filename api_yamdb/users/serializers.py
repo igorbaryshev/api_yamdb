@@ -18,8 +18,10 @@ class UserSignUpSerializer(serializers.ModelSerializer):
                                      validators=[UnicodeUsernameValidator()])
 
     def validate_username(self, username):
+
         if username.lower() == 'me':
             raise serializers.ValidationError('this username is not allowed.')
+
         return username
 
     class Meta:
