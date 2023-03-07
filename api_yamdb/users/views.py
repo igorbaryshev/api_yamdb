@@ -3,12 +3,13 @@ from django.contrib.auth.tokens import default_token_generator
 from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from users.permissions import IsAdminUser, IsUserAccountOwner
+from users.permissions import IsAdminUser, IsAuthenticated
 from users.serializers import (UserSignUpSerializer,
                                UserSerializer, UserProfileSerializer)
 from users.viewsets import RetrieveUpdateViewSet
@@ -63,6 +64,8 @@ class UserSignUpAPIView(CreateAPIView):
 class UserViewSet(ModelViewSet):
     """
     A viewset that allows admin to add or modify users.
+    Authenticated users can access and modify
+    their profile info at 'users/me/'.
     """
     queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
@@ -71,16 +74,22 @@ class UserViewSet(ModelViewSet):
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'patch', 'delete')
     lookup_field = 'username'
-    lookup_value_regex = r'[\w.@+-]{1,150}'
+    lookup_value_regex = r'\b(?!me\b)[\w.@+-]{1,150}'
 
-
-class UserProfileViewSet(RetrieveUpdateViewSet):
-    serializer_class = UserProfileSerializer
-    permission_classes = (IsUserAccountOwner,)
-
-    def get_object(self):
-        obj = self.request.user
-
-        self.check_object_permissions(self.request, obj)
-
-        return obj
+    @action(
+        detail=False,
+        methods=['get', 'patch'],
+        url_path='me',
+        permission_classes=(IsAuthenticated,),
+        serializer_class=UserProfileSerializer,
+    )
+    def user_profile(self, request):
+        user = request.user
+        if request.method == 'PATCH':
+            serializer = self.get_serializer(user,
+                                             data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+        else:
+            serializer = self.get_serializer(user)
+        return Response(serializer.data)

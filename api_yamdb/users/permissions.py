@@ -1,4 +1,5 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.permissions import (SAFE_METHODS, BasePermission,
+                                        IsAuthenticated)
 
 
 class IsAuthorOrReadOnly(BasePermission):
@@ -48,12 +49,3 @@ class IsAdminUser(BasePermission):
         return bool(request.user and request.user.is_authenticated
                     and (request.user.role == 'admin'
                          or request.user.is_superuser))
-
-
-class IsUserAccountOwner(BasePermission):
-    """
-    Allows account owners to modify their account.
-    """
-    def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.is_authenticated
-                    and request.user == obj)
