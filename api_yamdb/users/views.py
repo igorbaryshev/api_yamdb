@@ -64,12 +64,14 @@ class UserViewSet(ModelViewSet):
     """
     A viewset that allows admin to add or modify users.
     """
-    lookup_field = 'username'
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+    http_method_names = ('get', 'post', 'patch', 'delete')
+    lookup_field = 'username'
+    lookup_value_regex = r'[\w.@+-]{1,150}'
 
 
 class UserProfileViewSet(RetrieveUpdateViewSet):

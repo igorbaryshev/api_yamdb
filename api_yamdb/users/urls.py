@@ -1,4 +1,5 @@
-from django.urls import path, re_path
+from django.urls import include, path, re_path
+from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.views import (UserSignUpAPIView,
@@ -6,22 +7,16 @@ from users.views import (UserSignUpAPIView,
 
 app_name = 'users'
 
-users_list_view = UserViewSet.as_view({'get': 'list', 'post': 'create'})
-users_detail_view = UserViewSet.as_view(
-    {'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}
-)
+v1_router = SimpleRouter()
+v1_router.register(r'users', UserViewSet)
+
 users_profile_view = UserProfileViewSet.as_view(
     {'get': 'retrieve', 'patch': 'partial_update'}
 )
 
 urlpatterns = [
-    path('users/', users_list_view, name='users_api'),
     path('users/me/', users_profile_view, name='user_profile_api'),
-    re_path(
-        r'^users/(?P<username>[\w.@+-]{1,150})/$',
-        users_detail_view,
-        name='user_api'
-    ),
+    path('', include(v1_router.urls), name='users_api'),
     path('auth/signup/', UserSignUpAPIView.as_view(), name='signup_api'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain'),
 ]
