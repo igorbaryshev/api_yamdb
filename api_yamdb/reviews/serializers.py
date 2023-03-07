@@ -11,7 +11,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'text', 'author',
                   'score', 'pub_date']
         model = Review
-        
 
 
 class CommentSerializer(serializers.ModelSerializer):

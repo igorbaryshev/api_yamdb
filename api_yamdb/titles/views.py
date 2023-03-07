@@ -1,7 +1,6 @@
 from rest_framework import status, viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from .models import Category, Genre, Title
-from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 from .serializers import CategorySerializer, GenreSerializer, TitlesSerializer, CreateTitleSerializer
 from users.permissions import IsAdminOrReadOnly
 from rest_framework.response import Response
@@ -20,8 +19,6 @@ class CategoriesViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
     lookup_field = 'slug'
 
-
-class GenreViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, slug=None):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -35,18 +32,6 @@ class GenresViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    pagination_class = PageNumberPagination
-    lookup_field = 'slug'
-
-
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    permission_classes = [IsAdminOrReadOnly]
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    pagination_class = PageNumberPagination
-    lookup_field = 'slug'
     pagination_class = PageNumberPagination
     lookup_field = 'slug'
 

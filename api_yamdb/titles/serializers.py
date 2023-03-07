@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
+from django.db import models
+
 
 from .models import Title, Genre, Category
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = ['name', 'slug']
         model = Category
@@ -18,26 +18,17 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    genre = SlugRelatedField(
-        many=True, slug_field="slug", queryset=Genre.objects.all()
-    )
-    category = SlugRelatedField(
-        slug_field="slug", queryset=Category.objects.all()
-    )
-
-    class Meta:
-        fields = '__all__'
-        model = Title
-
-
 class TitlesSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
+    rating = serializers.SerializerMethodField('get_rating')
+
+    def get_rating(self, obj):
+        return obj.reviews.aggregate(models.Avg('score'))['score__avg']
 
     class Meta:
         model = Title
-        fields = ['id', 'name', 'year', 'description', 'genre', 'category']
+        fields = ['id', 'name', 'year', 'rating', 'description', 'genre', 'category']
 
 
 class CreateTitleSerializer(serializers.ModelSerializer):
