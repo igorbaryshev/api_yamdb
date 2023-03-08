@@ -1,3 +1,5 @@
+from datetime import date
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 
@@ -42,8 +44,9 @@ class Title(models.Model):
         max_length=256,
         verbose_name='Название произведения',
     )
-    year = models.IntegerField()
-
+    year = models.PositiveIntegerField(validators=[
+        MaxValueValidator(date.today().year)
+    ])
     category = models.ForeignKey(
         Category,
         null=True,
@@ -51,7 +54,6 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         related_name='title'
     )
-
     genre = models.ManyToManyField(
         Genre,
         blank=True,
