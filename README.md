@@ -69,11 +69,34 @@ The list of all available API endpoints can be accessed at `/redoc/` after runni
       "category": "movie"
     }
     ```
-* Get a list of titles of specific genre and category:
-<br>
- `/api/v1/titles/?genre={genre_slug}&category={category_slug}`
-<br>
-<br>
+* Get paginated list of titles of specific genre and category
+`/api/v1/titles/?genre={genre_slug}&category={category_slug}`:
+    ```json
+    {
+      "count": 0,
+      "next": "string",
+      "previous": "string",
+      "results": [
+        {
+          "id": 0,
+          "name": "string",
+          "year": 0,
+          "rating": 0,
+          "description": "string",
+          "genre": [
+            {
+              "name": "string",
+              "slug": "string"
+            }
+          ],
+          "category": {
+            "name": "string",
+            "slug": "string"
+          }
+        }
+      ]
+    }
+    ```
 * Create a new review as authenticated user`/api/v1/titles/{title_id}/reviews/`:
     ```json
     {
