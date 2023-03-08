@@ -1,3 +1,4 @@
+# **<span style="color:red">Ya</span>MDb API**
 ## Overview
 **<span style="color:red">Ya</span>MDb API** is a Web API based on Django REST framework.
 It allows people and third-party applications to connect to a database of reviews and information about media of different categories
