@@ -65,14 +65,14 @@ class UserViewSet(ModelViewSet):
     Authenticated users can access and modify
     their profile info at 'users/me/'.
     """
-    queryset = User.objects.all().order_by('username')
+    queryset = User.objects.order_by('username')
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'patch', 'delete')
     lookup_field = 'username'
-    lookup_value_regex = r'\b(?!me\b)[\w.@+-]{1,150}'
+    lookup_value_regex = r'[\w.@+-]{1,150}'
 
     @action(
         detail=False,
@@ -82,14 +82,7 @@ class UserViewSet(ModelViewSet):
         serializer_class=UserProfileSerializer,
     )
     def user_profile(self, request):
-        user = request.user
-
+        self.kwargs['username'] = request.user.username
         if request.method == 'PATCH':
-            serializer = self.get_serializer(user,
-                                             data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-        else:
-            serializer = self.get_serializer(user)
-
-        return Response(serializer.data)
+            return self.partial_update(request)
+        return self.retrieve(request)
