@@ -24,7 +24,7 @@ The list of all available API endpoints can be accessed at `/redoc/` after runni
 
 #### 2. Create and activate a virtual environment:
    
-   * GNU/Linux or Mac:
+   * GNU/Linux or MacOS:
 
        ```
        python3 -m venv venv
