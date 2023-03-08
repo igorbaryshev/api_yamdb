@@ -1,13 +1,15 @@
 from rest_framework import status, viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from .models import Category, Genre, Title
-from .serializers import CategorySerializer, GenreSerializer, TitlesSerializer, CreateTitleSerializer
+from .serializers import CategorySerializer, GenreSerializer
+from .serializers import TitlesSerializer, CreateTitleSerializer
 from users.permissions import IsAdminOrReadOnly
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import status
 from .custom_filter import GenreFilter
+from django.db import models
 
 
 class CategoriesViewSet(viewsets.ModelViewSet):
@@ -44,12 +46,16 @@ class GenresViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         slug = request.data.get('slug')
         if slug and Genre.objects.filter(slug=slug).exists():
-            return Response({'slug': 'slug already exist'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'slug': 'slug already exist'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         return super().create(request, *args, **kwargs)
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all().order_by('id')
+    queryset = Title.objects.annotate(
+        rating=models.Avg('reviews__score')).order_by('id')
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (GenreFilter, DjangoFilterBackend,)
     filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
