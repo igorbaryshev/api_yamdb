@@ -69,7 +69,7 @@ The list of all available API endpoints can be accessed at `/redoc/` after runni
       "category": "movie"
     }
     ```
-* Get paginated list of titles of specific genre and category
+* Get paginated list of titles of specific genre and category  
 `/api/v1/titles/?genre={genre_slug}&category={category_slug}`:
     ```json
     {
