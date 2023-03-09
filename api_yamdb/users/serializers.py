@@ -11,7 +11,7 @@ User = get_user_model()
 class UserSignUpSerializer(serializers.Serializer):
     """
     User registration serializer.
-    regex excludes name 'me' from allow names
+    Regex excludes name 'me' from allowed names.
     """
     email = serializers.EmailField(max_length=254)
     username = serializers.RegexField(regex=r'(?i)\b(?!me\b)^[\w.@+-]+\Z',
