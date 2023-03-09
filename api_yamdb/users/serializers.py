@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
@@ -14,15 +13,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     User registration serializer.
     """
     email = serializers.EmailField(max_length=254)
-    username = serializers.CharField(max_length=150,
-                                     validators=[UnicodeUsernameValidator()])
-
-    def validate_username(self, username):
-
-        if username.lower() == 'me':
-            raise serializers.ValidationError('this username is not allowed.')
-
-        return username
+    username = serializers.RegexField(regex=r'(?i)\b(?!me\b)^[\w.@+-]+\Z',
+                                      max_length=150)
 
     class Meta:
         model = User
