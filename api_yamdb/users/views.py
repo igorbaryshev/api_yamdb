@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.db.models import Q
+from django.db import IntegrityError
 from rest_framework import filters
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -39,14 +39,11 @@ class UserSignUpAPIView(GenericAPIView):
         username = serializer.validated_data.get('username')
         users = self.get_queryset()
 
-        not_exact_user = ~Q(email=email, username=username)
-        has_email_or_username = Q(email=email) | Q(username=username)
-        if users.filter(not_exact_user & has_email_or_username).exists():
+        try:
+            self.user, _ = users.get_or_create(email=email, username=username)
+        except IntegrityError:
             raise ValidationError('A user with such email '
                                   'or username already exists.')
-
-        self.user, _ = users.get_or_create(email=email, username=username)
-
         self.send_confirmation_code()
 
         return Response(serializer.data)
