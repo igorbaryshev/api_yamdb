@@ -10,7 +10,5 @@ router.register('genres', GenresViewSet, basename='genres')
 router.register('titles', TitlesViewSet, basename='titles')
 
 urlpatterns = [
-    path('', include('djoser.urls')),
-    path('', include('djoser.urls.jwt')),
     path('', include(router.urls)),
 ]

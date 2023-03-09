@@ -9,9 +9,7 @@ class Category(models.Model):
         unique=True,
         verbose_name='Категория',
     )
-    slug = models.SlugField(
-        unique=True
-    )
+    slug = models.SlugField(unique=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -27,9 +25,7 @@ class Genre(models.Model):
         unique=True,
         verbose_name='Жанр'
     )
-    slug = models.SlugField(
-        unique=True
-    )
+    slug = models.SlugField(unique=True)
 
     def __str__(self) -> str:
         return str(self.name)

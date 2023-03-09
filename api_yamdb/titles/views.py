@@ -25,7 +25,8 @@ class GenresViewSet(CustomSet):
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=models.Avg('reviews__score')).order_by('id')
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = (GenreFilter, DjangoFilterBackend,)
     filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
