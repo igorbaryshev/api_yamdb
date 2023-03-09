@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from django.db import models
-
 
 from .models import Title, Genre, Category
 
@@ -21,14 +19,13 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitlesSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.SerializerMethodField('get_rating')
-
-    def get_rating(self, obj):
-        return obj.reviews.aggregate(models.Avg('score'))['score__avg']
+    rating = serializers.IntegerField(allow_null=True)
 
     class Meta:
         model = Title
-        fields = ['id', 'name', 'year', 'rating', 'description', 'genre', 'category']
+        fields = [
+            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
+        ]
 
 
 class CreateTitleSerializer(serializers.ModelSerializer):
