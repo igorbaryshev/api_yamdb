@@ -1,34 +1,34 @@
 from rest_framework import serializers
 
-from .models import Title, Genre, Category
+from titles.models import Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
+
     class Meta:
-        fields = ['name', 'slug']
         model = Category
+        fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ['name', 'slug']
         model = Genre
+        fields = ('name', 'slug')
 
 
-class TitlesSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
     rating = serializers.IntegerField(allow_null=True)
 
     class Meta:
         model = Title
-        fields = [
-            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
-        ]
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'genre', 'category')
 
 
-class CreateTitleSerializer(serializers.ModelSerializer):
+class TitleCreateSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         many=True,
@@ -36,22 +36,13 @@ class CreateTitleSerializer(serializers.ModelSerializer):
     )
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
-        slug_field='slug'
+        slug_field='slug',
     )
 
     class Meta:
         model = Title
-        fields = ['id', 'name', 'year', 'description', 'category', 'genre']
-
-    def create(self, validated_data):
-        genres_data = validated_data.pop('genre')
-        category_data = validated_data.pop('category')
-        title = Title.objects.create(**validated_data, category=category_data)
-        for genre_data in genres_data:
-            genre = Genre.objects.get(slug=genre_data.slug)
-            title.genre.add(genre)
-        return title
+        fields = ('id', 'name', 'year', 'description', 'category', 'genre')
 
     def to_representation(self, instance):
-        serializer = TitlesSerializer(instance)
+        serializer = TitleSerializer(instance)
         return serializer.data

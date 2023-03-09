@@ -23,7 +23,7 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=256,
         unique=True,
-        verbose_name='Жанр'
+        verbose_name='Жанр',
     )
     slug = models.SlugField(unique=True)
 
@@ -41,19 +41,19 @@ class Title(models.Model):
         verbose_name='Название произведения',
     )
     year = models.PositiveIntegerField(validators=[
-        MaxValueValidator(date.today().year)
+        MaxValueValidator(date.today().year),
     ])
     category = models.ForeignKey(
         Category,
         null=True,
         verbose_name='Категория',
         on_delete=models.SET_NULL,
-        related_name='title'
+        related_name='titles',
     )
     genre = models.ManyToManyField(
         Genre,
         blank=True,
-        related_name='title'
+        related_name='titles',
     )
     description = models.TextField(verbose_name='описание', blank=True)
 

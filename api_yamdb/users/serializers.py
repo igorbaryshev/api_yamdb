@@ -8,17 +8,14 @@ from rest_framework_simplejwt.tokens import AccessToken
 User = get_user_model()
 
 
-class UserSignUpSerializer(serializers.ModelSerializer):
+class UserSignUpSerializer(serializers.Serializer):
     """
     User registration serializer.
+    Regex excludes name 'me' from allowed names.
     """
     email = serializers.EmailField(max_length=254)
     username = serializers.RegexField(regex=r'(?i)\b(?!me\b)^[\w.@+-]+\Z',
                                       max_length=150)
-
-    class Meta:
-        model = User
-        fields = ('email', 'username')
 
 
 class AccessTokenObtainSerializer(TokenObtainSerializer):
@@ -43,7 +40,7 @@ class AccessTokenObtainSerializer(TokenObtainSerializer):
         confirmation_code = attrs.get('confirmation_code')
         if not default_token_generator.check_token(self.user,
                                                    confirmation_code):
-            raise serializers.ValidationError('wrong confirmation code.')
+            raise serializers.ValidationError('Wrong confirmation code.')
 
         token = str(self.get_token(self.user))
         data["token"] = token
