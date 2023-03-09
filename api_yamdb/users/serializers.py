@@ -10,12 +10,16 @@ User = get_user_model()
 
 class UserSignUpSerializer(serializers.Serializer):
     """
-    User registration serializer.
-    Regex excludes name 'me' from allowed names.
+    User signup serializer.
     """
     email = serializers.EmailField(max_length=254)
-    username = serializers.RegexField(regex=r'(?i)\b(?!me\b)^[\w.@+-]+\Z',
-                                      max_length=150)
+    username = serializers.RegexField(regex=r'^[\w.@+-]+\Z', max_length=150)
+
+    def validate_username(self, username):
+        if username.lower() == 'me':
+            raise serializers.ValidationError("username 'me' is not allowed")
+
+        return username
 
 
 class AccessTokenObtainSerializer(TokenObtainSerializer):
@@ -57,15 +61,3 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    """
-    User profile serializer.
-    """
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
-        read_only_fields = ('role',)
