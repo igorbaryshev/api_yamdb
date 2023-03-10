@@ -10,8 +10,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from users.permissions import IsAdminUser
-from users.serializers import (UserProfileSerializer, UserSerializer,
-                               UserSignUpSerializer)
+from users.serializers import UserSerializer, UserSignUpSerializer
 
 User = get_user_model()
 
@@ -37,10 +36,10 @@ class UserSignUpAPIView(GenericAPIView):
 
         email = serializer.validated_data.get('email')
         username = serializer.validated_data.get('username')
-        users = self.get_queryset()
 
         try:
-            self.user, _ = users.get_or_create(email=email, username=username)
+            self.user, _ = self.get_queryset().get_or_create(email=email,
+                                                             username=username)
         except IntegrityError:
             raise ValidationError('A user with such email '
                                   'or username already exists.')
@@ -67,12 +66,15 @@ class UserViewSet(ModelViewSet):
     @action(
         detail=False,
         methods=['GET', 'PATCH'],
-        url_path='me',
         permission_classes=(IsAuthenticated,),
-        serializer_class=UserProfileSerializer,
     )
-    def user_profile(self, request):
+    def me(self, request):
         self.kwargs['username'] = request.user.username
         if request.method == 'PATCH':
-            return self.partial_update(request)
+            serializer = self.get_serializer(request.user, data=request.data,
+                                             partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(role=request.user.role)
+            return Response(serializer.data)
+
         return self.retrieve(request)

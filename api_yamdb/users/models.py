@@ -26,3 +26,11 @@ class User(AbstractUser):
             'unique': 'A user with that email already exists.',
         },
     )
+
+    @property
+    def is_moderator(self):
+        return self.role == self.Role.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.Role.ADMIN

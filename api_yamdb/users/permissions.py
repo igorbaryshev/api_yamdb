@@ -18,8 +18,8 @@ class IsAuthorOrReadOnly(BasePermission):
             return True
 
         if (request.user and request.user.is_authenticated
-           and (request.user.role in ('moderator', 'admin')
-                or request.user.is_superuser)):
+           and (request.user.is_moderator or request.user.is_admin)
+                or request.user.is_superuser):
             return True
 
         return False
@@ -34,7 +34,7 @@ class IsAdminOrReadOnly(BasePermission):
             return True
 
         if (request.user and request.user.is_authenticated
-           and (request.user.role == 'admin' or request.user.is_superuser)):
+           and (request.user.is_admin or request.user.is_superuser)):
             return True
 
         return False
@@ -46,5 +46,4 @@ class IsAdminUser(BasePermission):
     """
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated
-                    and (request.user.role == 'admin'
-                         or request.user.is_superuser))
+                    and (request.user.is_admin or request.user.is_superuser))
