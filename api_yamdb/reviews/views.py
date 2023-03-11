@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from rest_framework.exceptions import ValidationError
+# from rest_framework.exceptions import ValidationError
 
 from users.permissions import IsAuthorOrReadOnly
 from reviews.models import Review
@@ -17,16 +17,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Title, id=self.kwargs.get('title_id'))
 
     def get_queryset(self):
-        return self.title.reviews.order_by('id')
+        return self.title.reviews.order_by('pub_date')
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['title'] = self.title
+        return context
 
     def perform_create(self, serializer):
-        title = self.title
-        author = self.request.user
-
-        if author.reviews.filter(title=title).exists():
-            raise ValidationError('Вы уже делали отзыв к этому произведению.')
-
-        serializer.save(author=author, title=title)
+        serializer.save(author=self.request.user)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -38,7 +37,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Review, id=self.kwargs.get('review_id'))
 
     def get_queryset(self):
-        return self.review.comments.order_by('id')
+        return self.review.comments.order_by('pub_date')
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, review=self.review)

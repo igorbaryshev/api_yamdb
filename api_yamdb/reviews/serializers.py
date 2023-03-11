@@ -6,10 +6,19 @@ from reviews.models import Comment, Review
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
+    title = serializers.HiddenField(default=None)
+
+    def validate_title(self, _):
+        title = self.context['title']
+        if self.context['request'].user.reviews.filter(title=title).exists():
+            raise serializers.ValidationError(
+                'Вы уже оставляли отзыв к этому произведению.'
+            )
+        return title
 
     class Meta:
         model = Review
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
