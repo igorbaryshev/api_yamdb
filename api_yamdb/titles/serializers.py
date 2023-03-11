@@ -23,7 +23,7 @@ class TitlesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ['id', 'name', 'year', 'description', 'genre', 'category']
+        fields = '__all__'
 
 
 class CreateTitleSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class CreateTitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ['id', 'name', 'year', 'description', 'category', 'genre']
+        fields = '__all__'
 
     def create(self, validated_data):
         genres_data = validated_data.pop('genre')

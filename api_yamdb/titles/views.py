@@ -10,7 +10,7 @@ from .serializers import (
     CreateTitleSerializer
 )
 from .models import Category, Genre, Title
-from .custom_filter import GenreFilter
+from .custom_filter import TitleFilter
 from .custom_view import CustomSet
 
 
@@ -27,8 +27,8 @@ class GenresViewSet(CustomSet):
 class TitlesViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     permission_classes = [IsAdminOrReadOnly]
-    filter_backends = (GenreFilter, DjangoFilterBackend,)
-    filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
     pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
