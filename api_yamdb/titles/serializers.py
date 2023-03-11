@@ -4,7 +4,6 @@ from .models import Title, Genre, Category
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = ['name', 'slug']
         model = Category
@@ -20,10 +19,17 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitlesSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
+    rating = serializers.IntegerField(allow_null=True)
 
     class Meta:
         model = Title
+<<<<<<< HEAD
         fields = '__all__'
+=======
+        fields = [
+            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
+        ]
+>>>>>>> 7b581ab9b68c37a407762fa36e330b4d1cc63332
 
 
 class CreateTitleSerializer(serializers.ModelSerializer):

@@ -1,3 +1,42 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.exceptions import ValidationError
 
-# Create your views here.
+from users.permissions import IsAuthorOrReadOnly
+from reviews.models import Review
+from titles.models import Title
+from reviews.serializers import CommentSerializer, ReviewSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthorOrReadOnly]
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, id=self.kwargs.get('titles_id'))
+        return title.reviews.all().order_by('id')
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, id=self.kwargs.get('titles_id'))
+        review = Review.objects.filter(author=self.request.user, title=title)
+        if review.exists():
+            raise ValidationError(
+                {'Вы уже делали отзыв к этому произведению.'}
+            )
+        serializer.save(author=self.request.user, title=title)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthorOrReadOnly]
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        return review.comments.all().order_by('id')
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)

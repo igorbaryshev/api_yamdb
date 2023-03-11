@@ -9,9 +9,7 @@ class Category(models.Model):
         unique=True,
         verbose_name='Категория',
     )
-    slug = models.SlugField(
-        unique=True
-    )
+    slug = models.SlugField(unique=True)
 
     class Meta:
         verbose_name = 'Категория'
@@ -27,10 +25,14 @@ class Genre(models.Model):
         max_length=256,
         unique=True,
     )
+<<<<<<< HEAD
     slug = models.SlugField(
         unique=True,
         verbose_name=('слаг'),
     )
+=======
+    slug = models.SlugField(unique=True)
+>>>>>>> 7b581ab9b68c37a407762fa36e330b4d1cc63332
 
     class Meta:
         verbose_name = ('жанр')
