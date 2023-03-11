@@ -4,21 +4,30 @@ from rest_framework.relations import SlugRelatedField
 from reviews.models import Comment, Review
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True)
-    title = serializers.HiddenField(default=None)
+class CurrentTitleDefault(serializers.CurrentUserDefault):
 
-    def validate_title(self, _):
-        title = self.context['title']
-        if self.context['request'].user.reviews.filter(title=title).exists():
-            raise serializers.ValidationError(
-                'Вы уже оставляли отзыв к этому произведению.'
-            )
-        return title
+    def __call__(self, serializer_field):
+        return serializer_field.context['title']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
+    title = serializers.HiddenField(default=CurrentTitleDefault())
 
     class Meta:
         model = Review
         fields = '__all__'
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=['author', 'title'],
+                message="You've already reviewed this title."
+            )
+        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
