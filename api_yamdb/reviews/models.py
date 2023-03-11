@@ -19,10 +19,10 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews',
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[
-            MaxValueValidator(10),
             MinValueValidator(1),
+            MaxValueValidator(10),
         ],
     )
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
@@ -48,4 +48,8 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments',
     )
-    pub_date = models.DateTimeField('Дата добавления', auto_now_add=True)
+    pub_date = models.DateTimeField(
+        'Дата добавления',
+        auto_now_add=True,
+        db_index=True
+    )
