@@ -1,11 +1,21 @@
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-# from rest_framework.exceptions import ValidationError
+from rest_framework.viewsets import ModelViewSet
 
-from users.permissions import IsAuthorOrReadOnly
-from reviews.models import Review
-from titles.models import Title
-from reviews.serializers import CommentSerializer, ReviewSerializer
+from reviews.filters import TitleFilter
+from reviews.models import Category, Genre, Review, Title
+from reviews.serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleCreateSerializer,
+    TitleSerializer,
+)
+from reviews.viewsets import GenreCategoryViewSet
+from users.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -41,3 +51,27 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, review=self.review)
+
+
+class CategoryViewSet(GenreCategoryViewSet):
+    queryset = Category.objects.order_by('slug')
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(GenreCategoryViewSet):
+    queryset = Genre.objects.order_by('slug')
+    serializer_class = GenreSerializer
+
+
+class TitleViewSet(ModelViewSet):
+    queryset = (Title.objects
+                .annotate(rating=Avg('reviews__score'))
+                .order_by('id'))
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleSerializer
+        return TitleCreateSerializer
