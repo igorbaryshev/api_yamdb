@@ -1,12 +1,18 @@
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import CharFilter, FilterSet
+
+from titles.models import Title
 
 
-class GenreFilter(DjangoFilterBackend):
-    def filter_queryset(self, request, queryset, view):
-        genre = request.query_params.get('genre')
-        category = request.query_params.get('category')
-        if genre is not None:
-            return queryset.filter(genre__slug=genre)
-        if category is not None:
-            return queryset.filter(category__slug=category)
-        return queryset
+class TitleFilter(FilterSet):
+    genre = CharFilter(method='filter_by_genre')
+    category = CharFilter(method='filter_by_category')
+
+    class Meta:
+        model = Title
+        fields = ('year', 'name')
+
+    def filter_by_genre(self, queryset, name, value):
+        return queryset.filter(genre__slug=value)
+
+    def filter_by_category(self, queryset, name, value):
+        return queryset.filter(category__slug=value)

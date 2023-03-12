@@ -20,9 +20,17 @@ class User(AbstractUser):
         default=Role.USER,
     )
     email = models.EmailField(
-        'email address',
+        'Email',
         unique=True,
         error_messages={
             'unique': 'A user with that email already exists.',
         },
     )
+
+    @property
+    def is_moderator(self):
+        return self.role == self.Role.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.Role.ADMIN or self.is_superuser
