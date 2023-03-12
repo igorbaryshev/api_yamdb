@@ -1,16 +1,21 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.db import IntegrityError
-from rest_framework import filters
-from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from rest_framework import filters, serializers, status
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.tokens import AccessToken
 
 from users.permissions import IsAdminUser
-from users.serializers import UserSerializer, UserSignUpSerializer
+from users.serializers import (
+    TokenSerializer,
+    UserSerializer,
+    UserSignUpSerializer,
+)
 
 User = get_user_model()
 
@@ -41,8 +46,8 @@ class UserSignUpAPIView(GenericAPIView):
             self.user, _ = self.get_queryset().get_or_create(email=email,
                                                              username=username)
         except IntegrityError:
-            raise ValidationError('A user with such email '
-                                  'or username already exists.')
+            raise serializers.ValidationError('A user with such email '
+                                              'or username already exists.')
         self.send_confirmation_code()
 
         return Response(serializer.data)
@@ -80,3 +85,21 @@ class UserViewSet(ModelViewSet):
             serializer.save(role=self.request.user.role)
         else:
             serializer.save()
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def token_obtain(request):
+    serializer = TokenSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    username = serializer.validated_data['username']
+    user = get_object_or_404(User, username=username)
+    confirmation_code = serializer.validated_data['confirmation_code']
+
+    if not default_token_generator.check_token(user, confirmation_code):
+        raise serializers.ValidationError('Wrong confirmation code.')
+
+    token = AccessToken.get_token(user)
+
+    return Response(data={'token': str(token)}, status=status.HTTP_200_OK)
