@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
 
 from reviews.models import Category, Comment, Genre, Review, Title
 
@@ -13,7 +12,7 @@ class CurrentTitleDefault(serializers.CurrentUserDefault):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(
+    author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
         default=serializers.CurrentUserDefault(),
@@ -33,7 +32,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = SlugRelatedField(slug_field='username', read_only=True)
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
 
     class Meta:
         model = Comment

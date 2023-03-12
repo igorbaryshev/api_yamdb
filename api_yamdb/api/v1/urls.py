@@ -1,6 +1,5 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from reviews.views import (
     CategoryViewSet,
@@ -9,7 +8,7 @@ from reviews.views import (
     ReviewViewSet,
     TitleViewSet,
 )
-from users.views import UserSignUpAPIView, UserViewSet
+from users.views import UserSignUpAPIView, UserViewSet, token_obtain
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
@@ -32,5 +31,5 @@ router.register(
 urlpatterns = [
     path('', include(router.urls), name='api-root'),
     path('auth/signup/', UserSignUpAPIView.as_view(), name='signup'),
-    path('auth/token/', TokenObtainPairView.as_view(), name='token'),
+    path('auth/token/', token_obtain, name='token'),
 ]
