@@ -24,8 +24,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'rating',
-                  'description', 'genre', 'category')
+        fields = '__all__'
 
 
 class TitleCreateSerializer(serializers.ModelSerializer):
@@ -41,7 +40,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description', 'category', 'genre')
+        fields = '__all__'
 
     def to_representation(self, instance):
         serializer = TitleSerializer(instance)
