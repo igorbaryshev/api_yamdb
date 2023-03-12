@@ -61,7 +61,6 @@ class UserViewSet(ModelViewSet):
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'patch', 'delete')
     lookup_field = 'username'
-    lookup_value_regex = r'[\w.@+-]{1,150}'
 
     @action(
         detail=False,
@@ -70,11 +69,14 @@ class UserViewSet(ModelViewSet):
     )
     def me(self, request):
         self.kwargs['username'] = request.user.username
+
         if request.method == 'PATCH':
-            serializer = self.get_serializer(request.user, data=request.data,
-                                             partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(role=request.user.role)
-            return Response(serializer.data)
+            return self.partial_update(request)
 
         return self.retrieve(request)
+
+    def perform_update(self, serializer):
+        if self.action == 'me':
+            serializer.save(role=self.request.user.role)
+        else:
+            serializer.save()

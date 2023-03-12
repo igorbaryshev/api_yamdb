@@ -1,14 +1,15 @@
-from django_filters import rest_framework as filters
-from .models import Title
+from django_filters.rest_framework import CharFilter, FilterSet
+
+from titles.models import Title
 
 
-class TitleFilter(filters.FilterSet):
-    genre = filters.CharFilter(method='filter_by_genre')
-    category = filters.CharFilter(method='filter_by_category')
+class TitleFilter(FilterSet):
+    genre = CharFilter(method='filter_by_genre')
+    category = CharFilter(method='filter_by_category')
 
     class Meta:
         model = Title
-        fields = ['year', 'name']
+        fields = ('year', 'name')
 
     def filter_by_genre(self, queryset, name, value):
         return queryset.filter(genre__slug=value)

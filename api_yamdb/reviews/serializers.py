@@ -5,7 +5,9 @@ from reviews.models import Comment, Review
 
 
 class CurrentTitleDefault(serializers.CurrentUserDefault):
-
+    """
+    Default title value from context.
+    """
     def __call__(self, serializer_field):
         return serializer_field.context['title']
 
@@ -14,7 +16,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(
         slug_field='username',
         read_only=True,
-        default=serializers.CurrentUserDefault()
+        default=serializers.CurrentUserDefault(),
     )
     title = serializers.HiddenField(default=CurrentTitleDefault())
 
@@ -25,7 +27,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             serializers.UniqueTogetherValidator(
                 queryset=model.objects.all(),
                 fields=['author', 'title'],
-                message="You've already reviewed this title."
+                message="You've already reviewed this title.",
             )
         ]
 

@@ -2,12 +2,12 @@ from django.db.models import Avg
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 
+from titles.filters import TitleFilter
 from titles.models import Category, Genre, Title
 from titles.serializers import (CategorySerializer, GenreSerializer,
                                 TitleCreateSerializer, TitleSerializer)
 from titles.viewsets import GenreCategoryViewSet
 from users.permissions import IsAdminOrReadOnly
-from .filters import TitleFilter
 
 
 class CategoryViewSet(GenreCategoryViewSet):

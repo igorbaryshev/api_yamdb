@@ -5,9 +5,9 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(
+        'Категория',
         max_length=256,
         unique=True,
-        verbose_name='Категория',
     )
     slug = models.SlugField(unique=True)
 
@@ -16,24 +16,20 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return str(self.name)
+        return self.name
 
 
 class Genre(models.Model):
     name = models.CharField(
-        verbose_name=('название'),
+        'Название',
         max_length=256,
         unique=True,
     )
-
-    slug = models.SlugField(
-        unique=True,
-        verbose_name=('слаг'),
-    )
+    slug = models.SlugField(unique=True)
 
     class Meta:
-        verbose_name = ('жанр')
-        verbose_name_plural = ('жанры')
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
 
     def __str__(self):
         return self.name
@@ -41,34 +37,34 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(
-        verbose_name='название произведения',
+        'Название произведения',
         max_length=256,
     )
     year = models.PositiveIntegerField(
-        verbose_name='год выпуска',
+        'Год выпуска',
         validators=[MaxValueValidator(date.today().year)],
     )
     category = models.ForeignKey(
-        'Category',
+        Category,
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='категория',
+        verbose_name='Категория',
         related_name='titles',
     )
     genre = models.ManyToManyField(
-        'Genre',
+        Genre,
         blank=True,
-        verbose_name='жанры',
+        verbose_name='Жанры',
         related_name='titles',
     )
     description = models.TextField(
-        verbose_name='описание',
+        'Описание',
         blank=True,
     )
 
     class Meta:
-        verbose_name = 'произведение'
-        verbose_name_plural = 'произведения'
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
     def __str__(self):
         return self.name
