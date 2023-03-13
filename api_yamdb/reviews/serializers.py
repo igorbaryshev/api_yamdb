@@ -1,40 +1,36 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from reviews.models import Category, Comment, Genre, Review, Title
 
-
-class CurrentTitleDefault(serializers.CurrentUserDefault):
-    """
-    Default title value from context.
-    """
-    def __call__(self, serializer_field):
-        return serializer_field.context['title']
+User = get_user_model()
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
-        default=serializers.CurrentUserDefault(),
     )
-    title = serializers.HiddenField(default=CurrentTitleDefault())
+
+    def validate(self, attrs):
+        author = self.context['request'].user
+        method = self.context['request'].method
+        title = self.context['view'].title
+        if method == 'POST' and author.reviews.filter(title=title).exists():
+            raise serializers.ValidationError("You've already "
+                                              "reviewed this title.")
+
+        return attrs
 
     class Meta:
         model = Review
-        fields = '__all__'
-        validators = [
-            serializers.UniqueTogetherValidator(
-                queryset=model.objects.all(),
-                fields=['author', 'title'],
-                message="You've already reviewed this title.",
-            )
-        ]
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
-        read_only=True
+        read_only=True,
     )
 
     class Meta:
@@ -72,6 +68,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
         queryset=Genre.objects.all(),
         many=True,
         slug_field='slug',
+        allow_empty=False,
     )
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
