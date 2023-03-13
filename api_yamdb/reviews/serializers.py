@@ -13,12 +13,12 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     def validate(self, attrs):
-        author = self.context['request'].user
-        method = self.context['request'].method
-        title = self.context['view'].title
-        if method == 'POST' and author.reviews.filter(title=title).exists():
-            raise serializers.ValidationError("You've already "
-                                              "reviewed this title.")
+        if self.context['request'].method == 'POST':
+            author = self.context['request'].user
+            title = self.context['view'].title
+            if author.reviews.filter(title=title).exists():
+                raise serializers.ValidationError("You've already "
+                                                  "reviewed this title.")
 
         return attrs
 

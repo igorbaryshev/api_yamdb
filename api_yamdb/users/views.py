@@ -4,9 +4,9 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, serializers, status
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -20,35 +20,29 @@ from users.serializers import (
 User = get_user_model()
 
 
-class UserSignUpAPIView(GenericAPIView):
+class UserSignUpAPIView(APIView):
     """
     API view that signs up a new user, if it doesn't exist,
     and sends confirmation code to their email,
     if correct credentials are provided.
     """
-    queryset = User.objects.all()
-    serializer_class = UserSignUpSerializer
     permission_classes = (AllowAny,)
 
-    def send_confirmation_code(self):
+    def send_confirmation_code(self, user):
         subject = 'Confirmation code.'
-        message = default_token_generator.make_token(self.user)
-        self.user.email_user(subject, message)
+        message = default_token_generator.make_token(user)
+        user.email_user(subject, message)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = UserSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        email = serializer.validated_data.get('email')
-        username = serializer.validated_data.get('username')
-
         try:
-            self.user, _ = self.get_queryset().get_or_create(email=email,
-                                                             username=username)
+            user, _ = User.objects.get_or_create(**serializer.validated_data)
         except IntegrityError:
             raise serializers.ValidationError('A user with such email '
                                               'or username already exists.')
-        self.send_confirmation_code()
+        self.send_confirmation_code(user)
 
         return Response(serializer.data)
 
