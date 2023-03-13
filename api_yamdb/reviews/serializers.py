@@ -16,6 +16,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if self.context['request'].method == 'POST':
             author = self.context['request'].user
             title = self.context['view'].title
+
             if author.reviews.filter(title=title).exists():
                 raise serializers.ValidationError("You've already "
                                                   "reviewed this title.")
@@ -56,7 +57,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.IntegerField(allow_null=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
