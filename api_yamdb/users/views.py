@@ -100,6 +100,6 @@ def token_obtain(request):
     if not default_token_generator.check_token(user, confirmation_code):
         raise serializers.ValidationError('Wrong confirmation code.')
 
-    token = AccessToken.get_token(user)
+    token = AccessToken.for_user(user)
 
     return Response(data={'token': str(token)}, status=status.HTTP_200_OK)

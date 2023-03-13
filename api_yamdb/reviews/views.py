@@ -29,13 +29,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.title.reviews.order_by('pub_date')
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['title'] = self.title
-        return context
-
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(author=self.request.user, title=self.title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
